@@ -11,11 +11,43 @@ This repository contains Terraform code to provision a secure, scalable, and hig
 - **Secret Manager**: Secure storage for database credentials
 - **Service Accounts & IAM**: Least-privilege access for automation and security
 
+
 ## Prerequisites
 - [Terraform](https://www.terraform.io/downloads.html) >= 1.3.0
 - Google Cloud account and project
 - [gcloud CLI](https://cloud.google.com/sdk/docs/install)
 - Service account with sufficient permissions (compute, sql, storage, secretmanager)
+
+## Google Cloud Authentication
+
+Before running Terraform, authenticate with Google Cloud:
+
+1. **Install the Google Cloud SDK (gcloud) if not already installed:**
+	```bash
+	curl https://sdk.cloud.google.com | bash
+	exec -l $SHELL
+	gcloud init
+	```
+
+2. **Login to your Google account:**
+	```bash
+	gcloud auth login
+	```
+
+3. **Set your active project (replace with your project ID):**
+	```bash
+	gcloud config set project YOUR_PROJECT_ID
+	```
+
+4. **(Optional) Set default region/zone:**
+	```bash
+	gcloud config set compute/region YOUR_REGION
+	gcloud config set compute/zone YOUR_ZONE
+	```
+
+Terraform will automatically use the credentials from your gcloud session.
+
+If you want to use a service account for automation, see the [official docs](https://cloud.google.com/iam/docs/creating-managing-service-account-keys) for details.
 
 ## Usage
 1. **Clone the repository**
