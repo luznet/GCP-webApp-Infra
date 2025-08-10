@@ -1,3 +1,30 @@
+# Google Cloud VPN (HA VPN) for secure client access
+resource "google_compute_address" "vpn_static_ip" {
+  name   = "vpn-static-ip"
+  region = var.region
+  project = var.project_id
+}
+
+resource "google_compute_vpn_gateway" "vpn_gateway" {
+  name    = "vpn-gateway"
+  network = module.network.network_self_link
+  region  = var.region
+  project = var.project_id
+}
+
+resource "google_compute_vpn_tunnel" "vpn_tunnel" {
+  name          = "vpn-tunnel"
+  region        = var.region
+  project       = var.project_id
+  vpn_gateway   = google_compute_vpn_gateway.vpn_gateway.id
+  peer_ip       = var.vpn_peer_ip
+  shared_secret = var.vpn_shared_secret
+  ike_version   = 2
+  local_traffic_selector  = ["10.10.0.0/24"]
+  remote_traffic_selector = ["0.0.0.0/0"]
+}
+
+# Note: For a true client VPN (per-user), consider using 3rd party solutions or Google BeyondCorp Enterprise.
 # Specify required providers
 terraform {
   required_providers {
@@ -39,26 +66,43 @@ module "network" {
 
 # Firewall rules: allow HTTP/HTTPS to webservers, deny all else by default
 resource "google_compute_firewall" "allow_http" {
-  name    = "allow-http"
+  # Allow HTTP only from the load balancer (GCP health checks and traffic)
+  name    = "allow-http-from-lb"
   network = module.network.network_self_link
   allow {
     protocol = "tcp"
     ports    = ["80"]
   }
   target_tags = ["webserver"]
-  source_ranges = ["0.0.0.0/0"]
+  # GCP HTTP(S) Load Balancer health checks and traffic come from 130.211.0.0/22 and 35.191.0.0/16
+  source_ranges = ["130.211.0.0/22", "35.191.0.0/16"]
+}
+# HTTP Load Balancer (no SSL, scalable, modular)
+module "lb" {
+  source  = "terraform-google-modules/lb-http/google"
+  version = "9.0.0"
+
+  project = var.project_id
+  name    = "webapp-lb"
+  backends = {
+    default = {
+      group = module.webserver_group.instance_group
+      description = "Web server group"
+      enable_cdn = false
+      health_check = {
+        request_path = "/"
+        port         = 80
+      }
+    }
+  }
+  # SSL/TLS: To enable, you must own a real domain and uncomment the lines below.
+  # ssl = true
+  # managed_ssl_certificate_domains = [var.lb_domain]
+  http_forward = true
+  https_redirect = false
+  create_address = true
 }
 
-resource "google_compute_firewall" "allow_https" {
-  name    = "allow-https"
-  network = module.network.network_self_link
-  allow {
-    protocol = "tcp"
-    ports    = ["443"]
-  }
-  target_tags = ["webserver"]
-  source_ranges = ["0.0.0.0/0"]
-}
 
 resource "google_compute_firewall" "deny_all_egress" {
   name    = "deny-all-egress"
@@ -178,28 +222,54 @@ resource "google_project_iam_member" "webapp_sa_secret_accessor" {
   member  = "serviceAccount:${google_service_account.webapp_sa.email}"
 }
 
-module "lb" {
-  source  = "terraform-google-modules/lb-http/google"
-  version = "9.0.0"
 
-  project = var.project_id
-  name    = "webapp-lb"
-  backends = {
-    default = {
-      group = module.webserver_group.instance_group
-      description = "Web server group"
-      enable_cdn = false
-      health_check = {
-        request_path = "/"
-        port         = 80
-      }
+# module "lb" {
+#   source  = "terraform-google-modules/lb-http/google"
+#   version = "9.0.0"
+#
+#   project = var.project_id
+#   name    = "webapp-lb"
+#   backends = {
+#     default = {
+#       group = module.webserver_group.instance_group
+#       description = "Web server group"
+#       enable_cdn = false
+#       health_check = {
+#         request_path = "/"
+#         port         = 80
+#       }
+#     }
+#   }
+#   # SSL/TLS: A real, owned domain is required for Google-managed SSL certificates.
+#   # You must register and control the domain in your DNS provider, and point it to the load balancer IP.
+#   # Managed SSL will not work with fake, unregistered, or temporary domains.
+#   ssl = true
+#   managed_ssl_certificate_domains = [var.lb_domain]
+#   http_forward = true
+#   https_redirect = true
+#   create_address = true
+# }
+
+# Bastion (jumphost) for internal access
+resource "google_compute_instance" "jumphost" {
+  name         = "jumphost"
+  machine_type = "e2-micro"
+  zone         = var.zone
+  project      = var.project_id
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
     }
   }
-  ssl = true
-  managed_ssl_certificate_domains = [var.lb_domain]
-  http_forward = true
-  https_redirect = true
-  create_address = true
+  network_interface {
+    network    = module.network.network_self_link
+    subnetwork = module.network.subnets_self_links[0]
+    access_config {} # External IP for SSH
+  }
+  tags = ["jumphost"]
+  metadata = {
+    enable-oslogin = "TRUE"
+  }
 }
 
 # Cloud SQL Monitoring Alert: High CPU Utilization

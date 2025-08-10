@@ -1,3 +1,6 @@
+# VPN example values
+vpn_shared_secret = "prod-strong-shared-secret"
+vpn_peer_ip = "198.51.100.20"
 # Required variables for PROD environment
 db_user      = "webappuser"
 db_version   = "POSTGRES_14"
