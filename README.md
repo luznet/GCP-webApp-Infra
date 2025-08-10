@@ -57,6 +57,7 @@ export PATH="/opt/gcloud/google-cloud-sdk/bin:$PATH"
 3. **Set your active project (replace with your project ID):**
 	```bash
 	gcloud config set project YOUR_PROJECT_ID
+    gcloud auth application-default login
 	```
 
 4. **(Optional) Set default region/zone:**
