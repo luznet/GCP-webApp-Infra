@@ -1,0 +1,38 @@
+# Terraform state and sensitive files
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Sensitive variable files
+*.tfvars
+*.tfvars.json
+secrets.auto.tfvars
+
+# Editor/OS files
+*.swp
+*.swo
+*.bak
+.DS_Store
+.idea/
+.vscode/
+
+# Ignore logs and temp
+*.log
+*.tmp
+
+# Ignore backup files
+*~
+
+# Ignore credentials and private keys
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+*.env
+.env.*
+
+# Ignore any custom secrets
+secret*
+password*
