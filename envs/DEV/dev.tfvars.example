@@ -1,3 +1,6 @@
+# Required variables for DEV environment
+db_user      = "webappuser"
+db_version   = "POSTGRES_14"
 environment = "dev"
 project_id  = "your-dev-gcp-project-id"
 db_password = "your-dev-db-password"

@@ -1,3 +1,6 @@
+# Required variables for PROD environment
+db_user      = "webappuser"
+db_version   = "POSTGRES_14"
 environment = "prod"
 project_id  = "your-prod-gcp-project-id"
 db_password = "your-prod-db-password"
