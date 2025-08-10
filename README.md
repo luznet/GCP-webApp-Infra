@@ -56,9 +56,15 @@ This repository contains Terraform code to provision a secure, scalable, and hig
 - Review IAM permissions and firewall rules for least privilege
 
 ## Clean Up
-To destroy all resources:
+To destroy all resources for a specific environment:
 ```bash
-terraform destroy
+# For DEV
+echo "Destroying DEV..."
+terraform destroy -var-file=dev.tfvars
+
+# For PROD
+echo "Destroying PROD..."
+terraform destroy -var-file=prod.tfvars
 ```
 
 ## License
