@@ -38,3 +38,46 @@ variable "lb_domain" {
   type        = string
   default     = "example.com"
 }
+
+variable "owner" {
+  description = "Resource owner name"
+  type        = string
+}
+
+variable "project_name" {
+  description = "Project name for tagging resources"
+  type        = string
+}
+
+variable "used_by" {
+  description = "Who/what uses this infrastructure"
+  type        = string
+}
+
+variable "owner_email" {
+  description = "Owner email for resource tagging and notifications"
+  type        = string
+}
+
+variable "backup_enabled" {
+  description = "Enable automated backups for Cloud SQL instance"
+  type        = bool
+  default     = true
+}
+
+variable "point_in_time_recovery_enabled" {
+  description = "Enable point-in-time recovery for Cloud SQL instance"
+  type        = bool
+  default     = true
+}
+
+variable "transaction_log_retention_days" {
+  description = "Number of days to retain transaction logs for PITR"
+  type        = number
+  default     = 7
+}
+
+variable "environment" {
+  description = "Deployment environment name (e.g., dev, prod)"
+  type        = string
+}

@@ -85,6 +85,11 @@ resource "google_sql_database_instance" "webapp" {
       ipv4_enabled    = false
       private_network = module.network.network_self_link
     }
+    backup_configuration {
+      enabled                        = var.backup_enabled
+      point_in_time_recovery_enabled = var.point_in_time_recovery_enabled
+      transaction_log_retention_days = var.transaction_log_retention_days
+    }
   }
   deletion_protection = false
 }
@@ -110,7 +115,14 @@ resource "google_sql_database" "webapp" {
 resource "google_secret_manager_secret" "db_password" {
   secret_id = "db-password"
   replication {
-    automatic = true
+    # automatic = true # Deprecated, removed for compatibility
+  }
+  labels = {
+    owner        = var.owner
+    project_name = var.project_name
+    environment  = var.environment
+    used_by      = var.used_by
+    owner_email  = var.owner_email
   }
 }
 
@@ -188,4 +200,44 @@ module "lb" {
   http_forward = true
   https_redirect = true
   create_address = true
+}
+
+# Cloud SQL Monitoring Alert: High CPU Utilization
+resource "google_monitoring_alert_policy" "sql_high_cpu" {
+  display_name = "Cloud SQL High CPU Utilization"
+  combiner     = "OR"
+  conditions {
+    display_name = "Cloud SQL CPU > 80%"
+    condition_threshold {
+      filter          = "metric.type=\"cloudsql.googleapis.com/database/cpu/utilization\" resource.type=\"cloudsql_database\" resource.label.\"database_id\"=\"${google_sql_database_instance.webapp.name}\""
+      comparison      = "COMPARISON_GT"
+      threshold_value = 0.8
+      duration        = "300s"
+      trigger {
+        count = 1
+      }
+    }
+  }
+  notification_channels = [] # Add channel IDs here
+  enabled = true
+}
+
+# Cloud SQL Monitoring Alert: Storage Utilization
+resource "google_monitoring_alert_policy" "sql_high_storage" {
+  display_name = "Cloud SQL High Storage Utilization"
+  combiner     = "OR"
+  conditions {
+    display_name = "Cloud SQL Storage > 80%"
+    condition_threshold {
+      filter          = "metric.type=\"cloudsql.googleapis.com/database/disk/utilization\" resource.type=\"cloudsql_database\" resource.label.\"database_id\"=\"${google_sql_database_instance.webapp.name}\""
+      comparison      = "COMPARISON_GT"
+      threshold_value = 0.8
+      duration        = "300s"
+      trigger {
+        count = 1
+      }
+    }
+  }
+  notification_channels = [] # Add channel IDs here
+  enabled = true
 }
