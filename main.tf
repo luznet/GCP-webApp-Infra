@@ -42,6 +42,11 @@ provider "google" {
   region  = var.region
 }
 
+provider "google-beta" {
+  project = var.project_id
+  region  = var.region
+}
+
 provider "google" {
   alias  = "impersonate"
   project = var.project_id
@@ -86,13 +91,55 @@ module "lb" {
   name    = "webapp-lb"
   backends = {
     default = {
-      group = module.webserver_group.instance_group
-      description = "Web server group"
-      enable_cdn = false
+      port                    = 80
+      protocol                = "HTTP"
+      port_name               = "http"
+      description             = "Web server group"
+      enable_cdn              = false
+      compression_mode        = null
+      security_policy         = null
+      edge_security_policy    = null
+      custom_request_headers  = []
+      custom_response_headers = []
+      timeout_sec                     = 30
+      connection_draining_timeout_sec = 0
+      session_affinity                = "NONE"
+      affinity_cookie_ttl_sec         = 0
       health_check = {
-        request_path = "/"
-        port         = 80
+        check_interval_sec  = 5
+        timeout_sec         = 5
+        healthy_threshold   = 2
+        unhealthy_threshold = 2
+        request_path        = "/"
+        port                = 80
+        host                = ""
+        logging             = false
       }
+      log_config = {
+        enable      = false
+        sample_rate = 1.0
+      }
+      groups = [
+        {
+          group = module.webserver_group.instance_group
+          balancing_mode               = "UTILIZATION"
+          capacity_scaler              = 1.0
+          description                  = "Web server group"
+          max_connections              = null
+          max_connections_per_instance = null
+          max_connections_per_endpoint = null
+          max_rate                     = null
+          max_rate_per_instance        = null
+          max_rate_per_endpoint        = null
+          max_utilization              = 0.8
+        }
+      ]
+      iap_config = {
+        enable               = false
+        oauth2_client_id     = ""
+        oauth2_client_secret = ""
+      }
+      cdn_policy = null
     }
   }
   # SSL/TLS: To enable, you must own a real domain and uncomment the lines below.
@@ -159,7 +206,7 @@ resource "google_sql_database" "webapp" {
 resource "google_secret_manager_secret" "db_password" {
   secret_id = "db-password"
   replication {
-    # automatic = true # Deprecated, removed for compatibility
+    auto {}
   }
   labels = {
     owner        = var.owner
