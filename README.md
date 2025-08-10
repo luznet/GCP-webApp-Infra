@@ -69,7 +69,27 @@ Terraform will automatically use the credentials from your gcloud session.
 
 If you want to use a service account for automation, see the [official docs](https://cloud.google.com/iam/docs/creating-managing-service-account-keys) for details.
 
-## Usage
+
+
+## Scalability, Modularity, and Security
+
+- **HTTP Load Balancer**: The web application is fronted by a Google HTTP Load Balancer for scalability and high availability. This is modular and can be extended to support SSL when a real domain is available.
+- **No SSL by default**: The current setup uses HTTP only. To enable SSL, uncomment the relevant lines in the load balancer module and provide a real, owned domain.
+- **Sensitive data**: All secrets and sensitive values are managed via variables and tfvars files. No secrets are hardcoded in the codebase.
+- **Webserver access**: The webserver is only accessible via the load balancer or from within the VPC (jumphost, VPN). No direct public access is allowed.
+
+- **Cloud SQL is private**: The database is only accessible from within the VPC (webserver, jumphost, or via VPN). No public IP is assigned.
+- **Webserver is internal-only**: HTTP access is only allowed from the VPC subnet. Use the jumphost or VPN to access the webserver.
+
+## VPN Access (Optional)
+
+To access internal resources (webserver, SQL) from your laptop, you can use Google Cloud VPN. This setup allows you to connect securely to the VPC using the Google VPN client.
+
+**Steps:**
+1. Deploy the VPN resources (see Terraform code).
+2. Download the VPN configuration from the Google Cloud Console.
+3. Use the [Google Cloud VPN client](https://cloud.google.com/network-connectivity/docs/vpn/how-to/remote-access-client) to connect.
+4. Once connected, you can SSH to the jumphost or access internal services as if you were on the VPC.
 
 ### 1. Clone the repository
 ```bash
@@ -82,6 +102,9 @@ cd GCP-webApp-Infra
 
 This repo uses `envs/DEV/dev.tfvars.example` and `envs/PROD/prod.tfvars.example` as templates for environment-specific configuration.
 Copy and rename these files to `dev.tfvars` or `prod.tfvars` and fill in your real values before applying.
+
+> **Note:**
+> To use Google-managed SSL certificates with the load balancer, you must own and control a real domain name (e.g., purchased from a registrar). Managed SSL will not work with fake, unregistered, or temporary domains. You must configure your DNS to point the domain to the load balancer IP provided by Terraform.
 
 **Sample: envs/DEV/dev.tfvars.example**
 ```hcl
