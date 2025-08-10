@@ -1,3 +1,12 @@
+variable "vpn_shared_secret" {
+  description = "Pre-shared key for VPN tunnel (use a strong secret)"
+  type        = string
+}
+
+variable "vpn_peer_ip" {
+  description = "Peer (client) public IP for VPN tunnel"
+  type        = string
+}
 variable "project_id" {
   description = "The GCP project ID"
   type        = string
