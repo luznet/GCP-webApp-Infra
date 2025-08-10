@@ -23,21 +23,26 @@ This repository contains Terraform code to provision a secure, scalable, and hig
 Before running Terraform, authenticate with Google Cloud:
 
 1. **Install the Google Cloud SDK (gcloud) if not already installed:**
-	```# Download the latest Google Cloud SDK
+## Download the latest Google Cloud SDK
+```
 curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-456.0.0-linux-x86_64.tar.gz
-
-# Extract to /opt/gcloud (requires sudo)
+```
+## Extract to /opt/gcloud (requires sudo)
+```
 sudo mkdir -p /opt/gcloud
 sudo tar -C /opt/gcloud -xzf google-cloud-sdk-456.0.0-linux-x86_64.tar.gz
+```
 
-# (Optional) Remove the downloaded archive
-rm google-cloud-sdk-456.0.0-linux-x86_64.tar.gz
+## (Optional) Remove the downloaded archive
+```rm google-cloud-sdk-456.0.0-linux-x86_64.tar.gz
+```
 
-# Initialize the SDK
-/opt/gcloud/google-cloud-sdk/install.sh
+## Initialize the SDK
+```/opt/gcloud/google-cloud-sdk/install.sh
+```
 
-# Add gcloud to your PATH (add this to your ~/.bashrc or ~/.profile for persistence)
-export PATH="/opt/gcloud/google-cloud-sdk/bin:$PATH"
+## Add gcloud to your PATH (add this to your ~/.bashrc or ~/.profile for persistence)
+```export PATH="/opt/gcloud/google-cloud-sdk/bin:$PATH"
 	```
 
 2. **Login to your Google account:**
