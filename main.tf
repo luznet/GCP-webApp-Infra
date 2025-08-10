@@ -110,7 +110,14 @@ resource "google_sql_database" "webapp" {
 resource "google_secret_manager_secret" "db_password" {
   secret_id = "db-password"
   replication {
-    automatic = true
+    # automatic = true # Deprecated, removed for compatibility
+  }
+  labels = {
+    owner        = var.owner
+    project_name = var.project_name
+    environment  = var.environment
+    used_by      = var.used_by
+    owner_email  = var.owner_email
   }
 }
 

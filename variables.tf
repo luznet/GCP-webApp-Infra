@@ -38,3 +38,28 @@ variable "lb_domain" {
   type        = string
   default     = "example.com"
 }
+
+variable "owner" {
+  description = "Resource owner name"
+  type        = string
+}
+
+variable "project_name" {
+  description = "Project name for tagging resources"
+  type        = string
+}
+
+variable "used_by" {
+  description = "Who/what uses this infrastructure"
+  type        = string
+}
+
+variable "owner_email" {
+  description = "Owner email for resource tagging and notifications"
+  type        = string
+}
+
+variable "environment" {
+  description = "Deployment environment name (e.g., dev, prod)"
+  type        = string
+}
