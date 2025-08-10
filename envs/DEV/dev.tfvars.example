@@ -1,0 +1,6 @@
+environment = "dev"
+project_id  = "your-dev-gcp-project-id"
+db_password = "your-dev-db-password"
+lb_domain   = "dev.your-domain.com"
+region      = "europe-west1"
+zone        = "europe-west1-b"

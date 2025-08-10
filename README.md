@@ -61,29 +61,59 @@ Terraform will automatically use the credentials from your gcloud session.
 If you want to use a service account for automation, see the [official docs](https://cloud.google.com/iam/docs/creating-managing-service-account-keys) for details.
 
 ## Usage
-1. **Clone the repository**
-	```bash
-	git clone https://github.com/luznet/GCP-webApp-Infra.git
-	cd GCP-webApp-Infra
-	```
-2. **Create a `terraform.tfvars` file** with your configuration:
-	```hcl
-	project_id   = "your-gcp-project-id"
-	db_password  = "your-db-password" # Or use a secure method
-	lb_domain    = "your-domain.com"  # For managed SSL
-	```
-3. **Initialize Terraform**
-	```bash
-	terraform init
-	```
-4. **Review the plan**
-	```bash
-	terraform plan
-	```
-5. **Apply the configuration**
-	```bash
-	terraform apply
-	```
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/luznet/GCP-webApp-Infra.git
+cd GCP-webApp-Infra
+```
+
+### 2. Multi-Environment Setup (DEV/PROD)
+
+
+This repo uses `envs/DEV/dev.tfvars.example` and `envs/PROD/prod.tfvars.example` as templates for environment-specific configuration.
+Copy and rename these files to `dev.tfvars` or `prod.tfvars` and fill in your real values before applying.
+
+**Sample: envs/DEV/dev.tfvars.example**
+```hcl
+environment = "dev"
+project_id  = "your-dev-gcp-project-id"
+db_password = "your-dev-db-password"
+lb_domain   = "dev.your-domain.com"
+region      = "europe-west1"
+zone        = "europe-west1-b"
+```
+
+**Sample: envs/PROD/prod.tfvars.example**
+```hcl
+environment = "prod"
+project_id  = "your-prod-gcp-project-id"
+db_password = "your-prod-db-password"
+lb_domain   = "your-domain.com"
+region      = "europe-west1"
+zone        = "europe-west1-b"
+```
+
+### 3. Initialize Terraform
+```bash
+terraform init
+```
+
+### 4. Review the plan for your environment
+```bash
+# For DEV
+terraform plan -var-file=envs/DEV/dev.tfvars
+# For PROD
+terraform plan -var-file=envs/PROD/prod.tfvars
+```
+
+### 5. Apply the configuration for your environment
+```bash
+# For DEV
+terraform apply -var-file=envs/DEV/dev.tfvars
+# For PROD
+terraform apply -var-file=envs/PROD/prod.tfvars
+```
 
 ## Outputs
 - VPC network name
@@ -103,13 +133,9 @@ If you want to use a service account for automation, see the [official docs](htt
 To destroy all resources for a specific environment:
 ```bash
 # For DEV
-echo "Destroying DEV..."
-terraform destroy -var-file=dev.tfvars
-
+terraform destroy -var-file=envs/DEV/dev.tfvars
 # For PROD
-echo "Destroying PROD..."
-terraform destroy -var-file=prod.tfvars
-
+terraform destroy -var-file=envs/PROD/prod.tfvars
 ```
 
 ## License
