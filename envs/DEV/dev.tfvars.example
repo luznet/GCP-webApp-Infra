@@ -4,3 +4,13 @@ db_password = "your-dev-db-password"
 lb_domain   = "dev.your-domain.com"
 region      = "europe-west1"
 zone        = "europe-west1-b"
+
+owner        = "dev-owner"
+project_name = "webapp-dev"
+used_by      = "dev-team"
+owner_email  = "dev-owner@example.com"
+
+# Cloud SQL backup config (DEV example)
+backup_enabled = true
+point_in_time_recovery_enabled = true
+transaction_log_retention_days = 3

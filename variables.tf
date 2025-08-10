@@ -59,6 +59,24 @@ variable "owner_email" {
   type        = string
 }
 
+variable "backup_enabled" {
+  description = "Enable automated backups for Cloud SQL instance"
+  type        = bool
+  default     = true
+}
+
+variable "point_in_time_recovery_enabled" {
+  description = "Enable point-in-time recovery for Cloud SQL instance"
+  type        = bool
+  default     = true
+}
+
+variable "transaction_log_retention_days" {
+  description = "Number of days to retain transaction logs for PITR"
+  type        = number
+  default     = 7
+}
+
 variable "environment" {
   description = "Deployment environment name (e.g., dev, prod)"
   type        = string
