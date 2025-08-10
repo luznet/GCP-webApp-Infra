@@ -272,6 +272,16 @@ resource "google_compute_instance" "jumphost" {
   }
 }
 
+
+# Monitoring Notification Channel: Email
+resource "google_monitoring_notification_channel" "email" {
+  display_name = "Admin Email"
+  type         = "email"
+  labels = {
+    email_address = var.owner_email
+  }
+}
+
 # Cloud SQL Monitoring Alert: High CPU Utilization
 resource "google_monitoring_alert_policy" "sql_high_cpu" {
   display_name = "Cloud SQL High CPU Utilization"
@@ -288,7 +298,7 @@ resource "google_monitoring_alert_policy" "sql_high_cpu" {
       }
     }
   }
-  notification_channels = [] # Add channel IDs here
+  notification_channels = [google_monitoring_notification_channel.email.id]
   enabled = true
 }
 
@@ -308,7 +318,7 @@ resource "google_monitoring_alert_policy" "sql_high_storage" {
       }
     }
   }
-  notification_channels = [] # Add channel IDs here
+  notification_channels = [google_monitoring_notification_channel.email.id]
   enabled = true
 }
 
