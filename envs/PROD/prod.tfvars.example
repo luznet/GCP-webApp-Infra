@@ -1,0 +1,6 @@
+environment = "prod"
+project_id  = "your-prod-gcp-project-id"
+db_password = "your-prod-db-password"
+lb_domain   = "your-domain.com"
+region      = "europe-west1"
+zone        = "europe-west1-b"
