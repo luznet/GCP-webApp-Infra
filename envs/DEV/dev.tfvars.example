@@ -1,6 +1,7 @@
 # VPN example values
 vpn_shared_secret = "dev-strong-shared-secret"
 vpn_peer_ip = "203.0.113.10"
+
 # Required variables for DEV environment
 db_user      = "webappuser"
 db_version   = "POSTGRES_14"
