@@ -34,16 +34,19 @@ sudo tar -C /opt/gcloud -xzf google-cloud-sdk-456.0.0-linux-x86_64.tar.gz
 ```
 
 ## (Optional) Remove the downloaded archive
-```rm google-cloud-sdk-456.0.0-linux-x86_64.tar.gz
+```
+rm google-cloud-sdk-456.0.0-linux-x86_64.tar.gz
 ```
 
 ## Initialize the SDK
-```/opt/gcloud/google-cloud-sdk/install.sh
+```
+/opt/gcloud/google-cloud-sdk/install.sh
 ```
 
 ## Add gcloud to your PATH (add this to your ~/.bashrc or ~/.profile for persistence)
-```export PATH="/opt/gcloud/google-cloud-sdk/bin:$PATH"
-	```
+```
+export PATH="/opt/gcloud/google-cloud-sdk/bin:$PATH"
+```
 
 2. **Login to your Google account:**
 	```bash
